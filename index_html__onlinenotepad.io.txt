@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Desafio das Palavras – Prefixos e Sufixos</title>
+
+<style>
+
+* { box-sizing: border-box; }
+
+body {
+
+  margin: 0;
+
+  padding: 20px;
+
+  font-family: Arial, sans-serif;
+
+  background: linear-gradient(135deg, #e0f2fe, #fce7f3);
+
+  color: #243047;
+
+}
+
+.container {
+
+  max-width: 720px;
+
+  margin: 25px auto;
+
+  padding: 28px;
+
+  background: white;
+
+  border-radius: 22px;
+
+  box-shadow: 0 8px 28px #34405522;
+
+}
+
+h1 { text-align: center; color: #5541a8; }
+
+.subtitulo { text-align: center; color: #64748b; }
+
+.progresso {
+
+  height: 12px;
+
+  background: #e5e7eb;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  margin: 22px 0;
+
+}
+
+#barra {
+
+  height: 100%;
+
+  width: 0%;
+
+  background: #7c5ce0;
+
+  transition: width .3s;
+
+}
+
+#numero { color: #7053c5; font-weight: bold; }
+
+.pergunta {
+
+  font-size: 1.3rem;
+
+  line-height: 1.5;
+
+  font-weight: bold;
+
+  margin: 18px 0;
+
+}
+
+.opcao {
+
+  display: block;
+
+  width: 100%;
+
+  text-align: left;
+
+  padding: 15px;
+
+  margin: 10px 0;
+
+  border: 2px solid #d8d5ed;
+
+  border-radius: 12px;
+
+  background: #faf9ff;
+
+  font-size: 1rem;
+
+  cursor: pointer;
+
+}
+
+.opcao:hover:not(:disabled) {
+
+  background: #eee9ff;
+
+  border-color: #8b70df;
+
+}
+
+.opcao:disabled { cursor: default; }
+
+.correta { background: #dcfce7; border-color: #22a05a; }
+
+.errada { background: #fee2e2; border-color: #dc5252; }
+
+#feedback {
+
+  display: none;
+
+  padding: 15px;
+
+  margin-top: 18px;
+
+  border-radius: 12px;
+
+  line-height: 1.5;
+
+}
+
+#proximo, #reiniciar {
+
+  display: block;
+
+  margin: 22px auto 0;
+
+  padding: 13px 25px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #654ac2;
+
+  color: white;
+
+  font-size: 1rem;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+}
+
+#proximo:hover, #reiniciar:hover { background: #49339b; }
+
+#resultado { text-align: center; }
+
+#resultado h2 { color: #5541a8; }
+
+.oculto { display: none; }
+
+.rodape { text-align: center; color: #8790a1; font-size: .85rem; margin-top: 25px; }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>🌟 Desafio das Palavras</h1>
+
+  <p class="subtitulo">Prefixos e sufixos – 7º ano</p>
+
+  <div id="jogo">
+
+    <div class="progresso"><div id="barra"></div></div>
+
+    <div id="numero"></div>
+
+    <div class="pergunta" id="pergunta"></div>
+
+    <div id="opcoes"></div>
+
+    <div id="feedback"></div>
+
+    <button id="proximo" class="oculto" onclick="avancar()">Próxima questão ➜</button>
+
+  </div>
+
+  <div id="resultado" class="oculto">
+
+    <h2>🎉 Você concluiu o desafio!</h2>
+
+    <p id="pontuacao"></p>
+
+    <p id="mensagem"></p>
+
+    <button id="reiniciar" onclick="iniciar()">Jogar novamente</button>
+
+  </div>
+
+  <p class="rodape">Leia com atenção e descubra como as palavras são formadas!</p>
+
+</div>
+
+<script>
+
+const questoes = [
+
+ {
+
+  p: "Na palavra DESLEAL, o elemento DES- indica:",
+
+  o: ["Repetição de uma ação", "Negação ou oposição", "Tamanho pequeno", "Profissão"],
+
+  r: 1,
+
+  e: "O prefixo DES- indica negação ou ideia contrária. DESLEAL é o contrário de LEAL."
+
+ },
+
+ {
+
+  p: "O que acontece quando acrescentamos RE- à palavra FAZER, formando REFAZER?",
+
+  o: ["A ação é repetida", "A palavra fica no diminutivo", "A palavra indica uma profissão", "A ação deixa de existir"],
+
+  r: 0,
+
+  e: "O prefixo RE- indica repetição. REFAZER significa fazer novamente."
+
+ },
+
+ {
+
+  p: "Na palavra IMPOSSÍVEL, o prefixo IM- expressa:",
+
+  o: ["Intensidade", "Negação", "Repetição", "Lugar"],
+
+  r: 1,
+
+  e: "IM- é uma forma do prefixo IN- e indica negação. IMPOSSÍVEL é aquilo que não é possível."
+
+ },
+
+ {
+
+  p: "Na palavra CARINHOSO, o sufixo -OSO indica:",
+
+  o: ["Uma característica ou qualidade", "Uma ação repetida", "Uma profissão", "Uma negação"],
+
+  r: 0,
+
+  e: "O sufixo -OSO forma adjetivos que indicam característica. CARINHOSO é aquele que demonstra carinho."
+
+ },
+
+ {
+
+  p: "Na palavra RAPIDAMENTE, o sufixo -MENTE indica:",
+
+  o: ["Diminutivo", "Profissão", "Modo como algo acontece", "Negação"],
+
+  r: 2,
+
+  e: "O sufixo -MENTE forma advérbios de modo. RAPIDAMENTE indica que algo acontece de maneira rápida."
+
+ },
+
+ {
+
+  p: "Na palavra BONDADE, o sufixo -DADE forma uma palavra que indica:",
+
+  o: ["Uma qualidade ou estado", "Uma pessoa que trabalha", "Uma ação repetida", "Um objeto pequeno"],
+
+  r: 0,
+
+  e: "O sufixo -DADE forma substantivos que expressam qualidade, estado ou condição. BONDADE é a qualidade de quem é bom."
+
+ },
+
+ {
+
+  p: "Na palavra ANTISSOCIAL, o prefixo ANTI- significa:",
+
+  o: ["A favor de", "Contra ou em oposição a", "Novamente", "Muito pequeno"],
+
+  r: 1,
+
+  e: "O prefixo ANTI- indica oposição. ANTISSOCIAL é aquilo que se opõe à convivência social."
+
+ },
+
+ {
+
+  p: "Na palavra PEDREIRO, o sufixo -EIRO indica:",
+
+  o: ["Uma profissão ou ocupação", "Negação", "Repetição", "Uma qualidade"],
+
+  r: 0,
+
+  e: "O sufixo -EIRO pode indicar profissão ou ocupação. PEDREIRO é o profissional que trabalha com pedras e construção."
+
+ },
+
+ {
+
+  p: "Na palavra INFELIZMENTE, encontramos:",
+
+  o: ["Somente um prefixo", "Somente um sufixo", "Um prefixo e um sufixo", "Nenhum afixo"],
+
+  r: 2,
+
+  e: "IN- é prefixo de negação e -MENTE é sufixo que forma advérbios. A palavra apresenta os dois elementos."
+
+ },
+
+ {
+
+  p: "Assinale a alternativa em que a palavra apresenta um PREFIXO:",
+
+  o: ["Bondade", "Refazer", "Carinhoso", "Beleza"],
+
+  r: 1,
+
+  e: "REFAZER apresenta o prefixo RE-, que indica repetição. As demais palavras apresentam sufixos."
+
+ }
+
+];
+
+let atual = 0;
+
+let pontos = 0;
+
+let respondeu = false;
+
+function iniciar() {
+
+  atual = 0;
+
+  pontos = 0;
+
+  respondeu = false;
+
+  document.getElementById("jogo").classList.remove("oculto");
+
+  document.getElementById("resultado").classList.add("oculto");
+
+  mostrarQuestao();
+
+}
+
+function mostrarQuestao() {
+
+  respondeu = false;
+
+  const q = questoes[atual];
+
+  document.getElementById("numero").textContent =
+
+    "Questão " + (atual + 1) + " de " + questoes.length;
+
+  document.getElementById("barra").style.width =
+
+    (atual / questoes.length * 100) + "%";
+
+  document.getElementById("pergunta").textContent = q.p;
+
+  document.getElementById("feedback").style.display = "none";
+
+  document.getElementById("proximo").classList.add("oculto");
+
+  const area = document.getElementById("opcoes");
+
+  area.innerHTML = "";
+
+  q.o.forEach((opcao, i) => {
+
+    const botao = document.createElement("button");
+
+    botao.className = "opcao";
+
+    botao.textContent = String.fromCharCode(65 + i) + ") " + opcao;
+
+    botao.onclick = () => verificar(i);
+
+    area.appendChild(botao);
+
+  });
+
+}
+
+function verificar(escolha) {
+
+  if (respondeu) return;
+
+  respondeu = true;
+
+  const q = questoes[atual];
+
+  const botoes = document.querySelectorAll(".opcao");
+
+  botoes.forEach((botao, i) => {
+
+    botao.disabled = true;
+
+    if (i === q.r) botao.classList.add("correta");
+
+    if (i === escolha && i !== q.r) botao.classList.add("errada");
+
+  });
+
+  const feedback = document.getElementById("feedback");
+
+  feedback.style.display = "block";
+
+  if (escolha === q.r) {
+
+    pontos++;
+
+    feedback.style.background = "#dcfce7";
+
+    feedback.innerHTML = "✅ <strong>Muito bem! Resposta correta!</strong><br>" + q.e;
+
+  } else {
+
+    feedback.style.background = "#fee2e2";
+
+    feedback.innerHTML = "💡 <strong>Quase lá! Vamos aprender:</strong><br>" + q.e;
+
+  }
+
+  document.getElementById("proximo").classList.remove("oculto");
+
+  document.getElementById("proximo").textContent =
+
+    atual === questoes.length - 1 ? "Ver resultado 🏆" : "Próxima questão ➜";
+
+}
+
+function avancar() {
+
+  atual++;
+
+  if (atual < questoes.length) {
+
+    mostrarQuestao();
+
+  } else {
+
+    finalizar();
+
+  }
+
+}
+
+function finalizar() {
+
+  document.getElementById("jogo").classList.add("oculto");
+
+  document.getElementById("resultado").classList.remove("oculto");
+
+  document.getElementById("barra").style.width = "100%";
+
+  document.getElementById("pontuacao").innerHTML =
+
+    "Você acertou <strong>" + pontos + " de " + questoes.length + "</strong> questões!";
+
+  let mensagem;
+
+  if (pontos === 10) mensagem = "🏆 Excelente! Você é fera na formação de palavras!";
+
+  else if (pontos >= 7) mensagem = "👏 Muito bem! Você está dominando o conteúdo!";
+
+  else if (pontos >= 4) mensagem = "👍 Bom trabalho! Continue praticando!";
+
+  else mensagem = "📚 Não desanime! Revise o conteúdo e tente novamente!";
+
+  document.getElementById("mensagem").textContent = mensagem;
+
+}
+
+iniciar();
+
+</script>
+
+</body>
+
+</html>
